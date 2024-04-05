@@ -1,4 +1,4 @@
-# cryptocurrency-board
+# CryptoCurrency-board
 
 ## Features
 
