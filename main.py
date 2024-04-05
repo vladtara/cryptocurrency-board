@@ -130,7 +130,7 @@ def main() -> None:
     if not path.exists("data"):
         makedirs("data")
     if not path.exists("img"):
-        makedirs("data")
+        makedirs("img")
     data = {}
     for URL in URLs:
         name = URL.split("/")[-1]
