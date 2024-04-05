@@ -3,3 +3,5 @@ aiohttp
 pandas
 matplotlib
 Jinja2
+pydantic
+gitpython

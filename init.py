@@ -1,20 +1,28 @@
+import os
+import subprocess
+import pendulum
 from git import Repo
 
-# Clone the remote repository
-repo_url = "https://github.com/username/repository.git"
-local_path = "/path/to/local/repository"
-Repo.clone_from(repo_url, local_path)
+GITHUB_REPO_URL = os.getenv("GITHUB_REPO_URL")
+GITHUB_USERNAME = os.getenv("GITHUB_USERNAME")
+GITHUB_EMAIL = os.getenv("GITHUB_EMAIL")
 
-# Add a simple text file
-file_path = "/path/to/local/repository/file.txt"
-with open(file_path, "w") as file:
-    file.write("Hello, world!")
+def clone_and_run():
+    repo_path = "/tmp/test"
+    if os.path.exists(repo_path):
+        repo = Repo(repo_path)
+    else:
+        repo = Repo.init(repo_path)
 
-# Commit the changes
-repo = Repo(local_path)
-repo.index.add([file_path])
-repo.index.commit("Added a simple text file")
+    os.chdir(repo_path)
+    subprocess.call(["python", "main.py"])
 
-# Push the changes back to the remote repository
-origin = repo.remote("origin")
-origin.push()
+    with repo.config_writer() as git_config:
+        git_config.set_value("user", "name", GITHUB_USERNAME)
+        git_config.set_value("user", "email", GITHUB_EMAIL)
+
+    repo.index.add_all()
+    repo.index.commit(f"Duty Updates {pendulum.now().to_date_string()}")
+
+if __name__ == "__main__":
+    clone_and_run()
