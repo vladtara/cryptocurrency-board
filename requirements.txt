@@ -1,0 +1,5 @@
+pendulum
+aiohttp
+pandas
+matplotlib
+Jinja2
