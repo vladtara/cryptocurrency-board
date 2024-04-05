@@ -1,4 +1,4 @@
-from os import path
+from os import path, makedirs
 from pydantic import BaseModel
 from typing import Dict
 import pendulum
@@ -40,7 +40,7 @@ def append_data_to_csv(data: Data, filename: str) -> None:
         data (Data): The data to append to the CSV file.
         filename (str): The path to the CSV file.
     """
-    df_fetched = pd.DataFrame([data.dict()])
+    df_fetched = pd.DataFrame([data.model_dump()])
     if path.exists(filename):
         df_loaded = pd.read_csv(filename)
         df = pd.concat([df_fetched, df_loaded], ignore_index=True)
@@ -127,6 +127,10 @@ def main() -> None:
     Returns:
         None
     """
+    if not path.exists("data"):
+        makedirs("data")
+    if not path.exists("img"):
+        makedirs("data")
     data = {}
     for URL in URLs:
         name = URL.split("/")[-1]
@@ -139,4 +143,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    
+
