@@ -2,13 +2,11 @@ import os
 import subprocess
 import pendulum
 from git import Repo
-from dotenv import load_dotenv
 
 
 GITHUB_REPO_URL = os.getenv("GITHUB_REPO_URL")
 GITHUB_USERNAME = os.getenv("GITHUB_USERNAME")
 GITHUB_EMAIL = os.getenv("GITHUB_EMAIL")
-#load_dotenv()
 
 def clone_and_run():
     repo_path = "/tmp/update"
