@@ -1,9 +1,9 @@
 from os import path, makedirs
-from pydantic import BaseModel
 from typing import Dict
-import pendulum
-import aiohttp
 import asyncio
+import aiohttp
+import pendulum
+from pydantic import BaseModel
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 import matplotlib.pyplot as plt
@@ -79,6 +79,7 @@ def create_plot(df: pd.DataFrame, currency: str) -> None:
     plt.figure(figsize=(12,5))
     plt.xlabel('Date')
     plt.ylabel('Price USD')
+
     if currency == 'BTC-USD':
         plt.plot(df['date'], df['price'], 
             linestyle='solid',
@@ -90,6 +91,7 @@ def create_plot(df: pd.DataFrame, currency: str) -> None:
             markersize=3,
             linewidth=4,
             alpha=0.5)
+        
     elif currency == 'ETH-USD':
         plt.plot(df['date'], df['price'], 
             linestyle='solid',
@@ -133,13 +135,14 @@ def main() -> None:
         makedirs("img")
     data = {}
     for URL in URLs:
-        name = URL.split("/")[-1]
+        name = URL.rsplit("/", maxsplit=1)[-1]
         jsonData = asyncio.run(fetch(URL))
         data[name.split("-")[0]] = jsonData['price']
         append_data_to_csv(Data(**jsonData), f"./data/{name.lower()}.csv")
         df = load_csv(f"./data/{name.lower()}.csv")
         create_plot(df, name)
     generate_readme(data)
+
 
 if __name__ == "__main__":
     main()
