@@ -13,7 +13,7 @@ def clone_and_run():
     if os.path.exists(repo_path):
         repo = Repo(repo_path)
         origin = repo.remote("origin")
-        origin.fetch()
+        origin.pull()
     else:
         repo = Repo.clone_from(GITHUB_REPO_URL,repo_path)
 
