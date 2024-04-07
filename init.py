@@ -24,7 +24,7 @@ def clone_and_run():
         git_config.set_value("user", "name", GITHUB_USERNAME)
         git_config.set_value("user", "email", GITHUB_EMAIL)
 
-    repo.index.add(["README.md","data/","img/"])
+    repo.index.add(["README.md","data/*","img/*"])
     repo.index.commit(f"Duty Updates {pendulum.now().to_date_string()}")
     origin = repo.remote("origin")
     origin.push()
