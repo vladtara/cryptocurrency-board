@@ -10,12 +10,14 @@ import matplotlib.pyplot as plt
 
 URLs = [
     "https://api.blockchain.com/v3/exchange/tickers/BTC-USD",
-    "https://api.blockchain.com/v3/exchange/tickers/ETH-USD"
+    "https://api.blockchain.com/v3/exchange/tickers/ETH-USD",
 ]
+
 
 class Data(BaseModel):
     date: str
     price: float
+
 
 async def fetch(url: str) -> Dict[str, float]:
     """
@@ -31,6 +33,7 @@ async def fetch(url: str) -> Dict[str, float]:
         async with session.get(url) as response:
             data = await response.json()
             return {"date": pendulum.now().to_date_string(), "price": data["price_24h"]}
+
 
 def append_data_to_csv(data: Data, filename: str) -> None:
     """
@@ -48,6 +51,7 @@ def append_data_to_csv(data: Data, filename: str) -> None:
         df = df_fetched
     df.to_csv(filename, index=False)
 
+
 def load_csv(filename: str) -> pd.DataFrame:
     """
     Loads data from a CSV file.
@@ -64,6 +68,7 @@ def load_csv(filename: str) -> pd.DataFrame:
         df = pd.DataFrame()
     return df
 
+
 def create_plot(df: pd.DataFrame, currency: str) -> None:
     """
     Creates a plot of the price data.
@@ -75,36 +80,43 @@ def create_plot(df: pd.DataFrame, currency: str) -> None:
     Returns:
         None
     """
-    plt.style.use('Solarize_Light2')
-    plt.figure(figsize=(12,5))
-    plt.xlabel('Date')
-    plt.ylabel('Price USD')
+    plt.style.use("Solarize_Light2")
+    plt.figure(figsize=(12, 5))
+    plt.xlabel("Date")
+    plt.ylabel("Price USD")
 
-    if currency == 'BTC-USD':
-        plt.plot(df['date'], df['price'], 
-            linestyle='solid',
-            color='Orange',
+    if currency == "BTC-USD":
+        plt.plot(
+            df["date"],
+            df["price"],
+            linestyle="solid",
+            color="Orange",
             marker="H",
-            markeredgecolor = "black",
-            markerfacecolor='green',
+            markeredgecolor="black",
+            markerfacecolor="green",
             markeredgewidth=2,
             markersize=3,
             linewidth=4,
-            alpha=0.5)
-        
-    elif currency == 'ETH-USD':
-        plt.plot(df['date'], df['price'], 
-            linestyle='solid',
-            color='Blue',
+            alpha=0.5,
+        )
+
+    elif currency == "ETH-USD":
+        plt.plot(
+            df["date"],
+            df["price"],
+            linestyle="solid",
+            color="Blue",
             marker="H",
-            markeredgecolor = "black",
-            markerfacecolor='green',
+            markeredgecolor="black",
+            markerfacecolor="green",
             markeredgewidth=2,
             markersize=3,
             linewidth=4,
-            alpha=0.5)
-    plt.title(f'7 days Price {currency}')
-    plt.savefig(f'./img/{currency.lower()}.png')
+            alpha=0.5,
+        )
+    plt.title(f"7 days Price {currency}")
+    plt.savefig(f"./img/{currency.lower()}.png")
+
 
 def generate_readme(data: Dict[str, float]) -> None:
     """
@@ -116,11 +128,12 @@ def generate_readme(data: Dict[str, float]) -> None:
     Returns:
         None
     """
-    loader = FileSystemLoader('./templates')
+    loader = FileSystemLoader("./templates")
     env = Environment(loader=loader)
-    template = env.get_template('readme.md')
-    with open('README.md', 'w') as f:
+    template = env.get_template("readme.md")
+    with open("README.md", "w") as f:
         f.write(template.render(data))
+
 
 def main() -> None:
     """
@@ -137,7 +150,7 @@ def main() -> None:
     for URL in URLs:
         name = URL.rsplit("/", maxsplit=1)[-1]
         jsonData = asyncio.run(fetch(URL))
-        data[name.split("-")[0]] = jsonData['price']
+        data[name.split("-")[0]] = jsonData["price"]
         append_data_to_csv(Data(**jsonData), f"./data/{name.lower()}.csv")
         df = load_csv(f"./data/{name.lower()}.csv")
         create_plot(df, name)
@@ -146,4 +159,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
