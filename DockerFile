@@ -1,6 +1,10 @@
 # Use the official Python base image
 FROM 3.12.2-alpine3.19
 
+ENV GITHUB_REPO_URL
+ENV GITHUB_USERNAME
+ENV GITHUB_EMAIL
+
 # Set the working directory in the container
 WORKDIR /app
 
@@ -11,7 +15,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code to the container
-COPY . .
+COPY init.py .
 
 # Set the entrypoint command for the container
 CMD ["python", "init.py"]
