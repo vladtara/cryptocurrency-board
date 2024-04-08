@@ -1,19 +1,19 @@
-# name: cron-job
+name: cron-job
 
-# on:
-#   schedule:
-#     - cron: "10 8 * * *"
-# jobs:
-#   docker:
-#     runs-on: ubuntu-latest
-#     env:
-#       GITHUB_REPO_URL: https://${{github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-#       GITHUB_USERNAME: ${{ github.actor }}
-#       GITHUB_EMAIL: ${{ vars.EMAIL }}
-#     container:
-#       image: ghcr.io/${{ github.repository }}:latest
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v4
-#       - name: Run
-#         run: python init.py
+on:
+  schedule:
+    - cron: "10 8 * * *"
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REPO_URL: https://${{github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+      GITHUB_USERNAME: ${{ github.actor }}
+      GITHUB_EMAIL: ${{ vars.EMAIL }}
+    container:
+      image: ghcr.io/${{ github.repository }}:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run
+        run: python init.py
