@@ -21,6 +21,13 @@ jobs:
       - name: Run tests
         run: |
           ls -la
-          git satatus
+          git status
           git add .
           git commit -m "Update"
+  docker:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}:latest
+    steps:
+      - name: Run
+        run: ls -la
