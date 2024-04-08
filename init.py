@@ -48,6 +48,5 @@ def clone_and_run():
 
 if __name__ == "__main__":
     logging.info("Start.")
-    print("#")
     clone_and_run()
     logging.info("Stop.")
