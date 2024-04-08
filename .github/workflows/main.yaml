@@ -3,6 +3,9 @@ name: Build and push
 on:
   push:
     branches: [master]
+    paths:
+      - "init.py"
+      - "Dockerfile"
 
 jobs:
   build:
