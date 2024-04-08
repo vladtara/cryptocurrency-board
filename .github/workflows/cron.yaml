@@ -2,7 +2,7 @@ name: cron-job
 
 on:
   schedule:
-    - cron: "10 8 * * *"
+    - cron: "50 6 * * *"
 jobs:
   docker:
     runs-on: ubuntu-latest
