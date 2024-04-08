@@ -63,7 +63,7 @@ def load_csv(filename: str) -> pd.DataFrame:
         pandas.DataFrame: The loaded data as a DataFrame.
     """
     if path.exists(filename):
-        df = pd.read_csv(filename).sort_index(ascending=False).head(7)
+        df = pd.read_csv(filename).head(7).sort_index(ascending=False)
     else:
         df = pd.DataFrame()
     return df
