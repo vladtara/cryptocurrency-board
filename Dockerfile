@@ -1,5 +1,5 @@
 # Use the official Python base image
-FROM python:3.12.1-alpine3.19
+FROM python:3.12.2-alpine3.19
 
 ENV GITHUB_REPO_URL=""
 ENV GITHUB_USERNAME=""
