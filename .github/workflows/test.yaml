@@ -32,5 +32,7 @@ jobs:
     container:
       image: ghcr.io/${{ github.repository }}:latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Run
         run: python init.py
