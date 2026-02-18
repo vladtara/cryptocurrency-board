@@ -1,78 +1,62 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 ## Project Overview
 
-Cryptocurrency-board is an automated cryptocurrency price monitoring and visualization system. It fetches real-time BTC and ETH prices from the Blockchain.com API, maintains 7-day rolling historical data in CSV files, generates Matplotlib charts, and auto-generates a README with current prices and embedded charts. A GitHub Actions cron job runs daily at 5:50 AM UTC via Docker.
-
-## Tech Stack
-
-- **Language**: Python 3.12 (Alpine Docker image)
-- **Async HTTP**: aiohttp + asyncio
-- **Data**: pandas (CSV read/write), pydantic (API response validation)
-- **Visualization**: matplotlib
-- **Templating**: jinja2 (README generation from `templates/readme.md`)
-- **Date/Time**: pendulum
-- **Git Automation**: gitpython
-- **CI/CD**: GitHub Actions, Docker, GitHub Container Registry (ghcr.io)
-
-## Project Structure
-
-```
-main.py          # Core logic: fetch prices, update CSVs, generate charts, render README
-init.py          # Git automation: clone/pull, run main.py, commit and push
-data/            # CSV files (btc-usd.csv, eth-usd.csv) - 7-day rolling price history
-img/             # Generated PNG charts (btc-usd.png, eth-usd.png)
-templates/       # Jinja2 template for README.md generation
-.github/workflows/
-  cron.yaml      # Daily scheduled job (5:50 AM UTC)
-  main.yaml      # Docker build and push on master changes
-```
+Automated cryptocurrency price monitoring system. Fetches BTC and ETH prices from the Blockchain.com API daily, maintains 7-day rolling CSV history, generates Matplotlib charts, and renders a README with current prices via Jinja2. Runs daily at 5:50 AM UTC via GitHub Actions cron job in Docker.
 
 ## Build & Run
 
 ```bash
-# Install dependencies
 pip install -r requirements.txt
 
-# Run the main pipeline (fetch, chart, render)
+# Run the main pipeline (fetch prices, update CSVs, generate charts, render README)
 python main.py
 
-# Run with git automation (used in Docker/CI)
+# Run with git automation (clone repo to /tmp/update, run main.py, commit and push)
 python init.py
 ```
 
-## Docker
-
+Docker (used in CI):
 ```bash
 docker build -t cryptocurrency-board .
 docker run --env GITHUB_REPO_URL="..." --env GITHUB_USERNAME="..." --env GITHUB_EMAIL="..." cryptocurrency-board
 ```
 
-## Environment Variables (for init.py / CI)
+No formal test suite. `test.ipynb` is used for manual/exploratory validation.
 
-- `GITHUB_REPO_URL` - Repository URL with auth token
-- `GITHUB_USERNAME` - Git commit author name
-- `GITHUB_EMAIL` - Git commit author email
+## Architecture
+
+**Data pipeline**: `main.py` drives the entire flow sequentially:
+1. Async fetch via aiohttp → Blockchain.com API (`price_24h` field)
+2. Pydantic `Data` model validates response (date + price)
+3. Pandas appends to CSV, keeps last 7 entries (rolling window)
+4. Matplotlib generates chart PNGs to `img/`
+5. Jinja2 renders `templates/readme.md` → `README.md` with current prices
+
+**Deployment model**: The Docker image only contains `init.py` and dependencies. At runtime, `init.py` clones the full repo to `/tmp/update`, runs `main.py` from there, then commits and pushes changes back. This means `main.py` changes take effect without rebuilding the Docker image. The image only rebuilds when `init.py` or `Dockerfile` change (see `.github/workflows/main.yaml`).
+
+**CI/CD** (two workflows):
+- `cron.yaml` — daily scheduled run using the pre-built container image from GHCR
+- `main.yaml` — rebuilds and pushes Docker image to `ghcr.io` only when `init.py` or `Dockerfile` change on master
 
 ## Code Conventions
 
-- PEP 8 style, 4-space indentation
-- Full type annotations on function parameters and return types
+- PEP 8, 4-space indentation
+- Full type annotations on function signatures
 - Google-style docstrings with Args/Returns sections
-- snake_case for functions/variables, PascalCase for classes
 - Async context managers for HTTP sessions
-- No formal test suite; `test.ipynb` used for manual/exploratory validation
+- Commit messages: `Duty Updates YYYY-MM-DD`
 
-## Key Patterns
+## Environment Variables (for init.py / CI)
 
-- **Data pipeline**: async fetch -> pydantic validation -> pandas CSV append -> matplotlib chart -> jinja2 README
-- **Pydantic BaseModel** (`Data` class) validates API response structure
-- **7-day rolling window**: CSVs are sorted by date and trimmed to last 7 entries
-- **Atomic git commits**: `init.py` stages only specific files (README.md, data/*, img/*)
-- **Commit messages**: Format is `Duty Updates YYYY-MM-DD`
+- `GITHUB_REPO_URL` — Repository URL with embedded auth token
+- `GITHUB_USERNAME` — Git commit author name
+- `GITHUB_EMAIL` — Git commit author email
 
 ## API
 
 - Endpoint: `https://api.blockchain.com/v3/exchange/tickers/{symbol}`
 - Symbols: `BTC-USD`, `ETH-USD`
-- Response field used: `last_trade_price`
+- Response field used: `price_24h`
