@@ -4,7 +4,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-<<<<<<< HEAD
 Automated cryptocurrency price monitoring system. Fetches BTC and ETH prices from the Blockchain.com API daily, maintains 7-day rolling CSV history, generates Matplotlib charts, and renders a README with current prices via Jinja2. Runs daily at 5:50 AM UTC via GitHub Actions cron job in Docker.
 
 ## Build & Run
@@ -20,6 +19,7 @@ python init.py
 ```
 
 Docker (used in CI):
+
 ```bash
 docker build -t cryptocurrency-board .
 docker run --env GITHUB_REPO_URL="..." --env GITHUB_USERNAME="..." --env GITHUB_EMAIL="..." cryptocurrency-board
@@ -30,6 +30,7 @@ No formal test suite. `test.ipynb` is used for manual/exploratory validation.
 ## Architecture
 
 **Data pipeline**: `main.py` drives the entire flow sequentially:
+
 1. Async fetch via aiohttp → Blockchain.com API (`price_24h` field)
 2. Pydantic `Data` model validates response (date + price)
 3. Pandas appends to CSV, keeps last 7 entries (rolling window)
@@ -39,6 +40,7 @@ No formal test suite. `test.ipynb` is used for manual/exploratory validation.
 **Deployment model**: The Docker image only contains `init.py` and dependencies. At runtime, `init.py` clones the full repo to `/tmp/update`, runs `main.py` from there, then commits and pushes changes back. This means `main.py` changes take effect without rebuilding the Docker image. The image only rebuilds when `init.py` or `Dockerfile` change (see `.github/workflows/main.yaml`).
 
 **CI/CD** (two workflows):
+
 - `cron.yaml` — daily scheduled run using the pre-built container image from GHCR
 - `main.yaml` — rebuilds and pushes Docker image to `ghcr.io` only when `init.py` or `Dockerfile` change on master
 
@@ -61,28 +63,31 @@ No formal test suite. `test.ipynb` is used for manual/exploratory validation.
 - Endpoint: `https://api.blockchain.com/v3/exchange/tickers/{symbol}`
 - Symbols: `BTC-USD`, `ETH-USD`
 - Response field used: `price_24h`
-=======
-Automated cryptocurrency price tracking and visualization system. Fetches BTC and ETH prices daily, stores historical data in CSV, generates 7-day price charts, dynamically renders README.md via Jinja2 templates, and auto-commits/pushes updates to GitHub.
+  Automated cryptocurrency price tracking and visualization system. Fetches BTC and ETH prices daily, stores historical data in CSV, generates 7-day price charts, dynamically renders README.md via Jinja2 templates, and auto-commits/pushes updates to GitHub.
 
 ## Commands
 
 ### Run locally
+
 ```bash
 uv run python main.py
 ```
 
 ### Run via Docker (automated/scheduled mode)
+
 ```bash
 docker build -t cryptocurrency-board .
 docker run -e GITHUB_REPO_URL=... -e GITHUB_USERNAME=... -e GITHUB_EMAIL=... cryptocurrency-board
 ```
 
 ### Type checking
+
 ```bash
 uv run pyright
 ```
 
 ### Install dependencies
+
 ```bash
 uv sync
 ```
@@ -120,4 +125,3 @@ uv sync
 
 - **Blockchain.com Exchange API**: `https://api.blockchain.com/v3/exchange/tickers/` — used in `main.py`
 - **CoinGecko API**: `https://api.coingecko.com/api/v3/simple/price` — used in `src/main.py`
->>>>>>> b867db8 (update)
