@@ -7,7 +7,7 @@ ENV COINGECKO_API_KEY=""
 
 WORKDIR /app
 
-RUN apk add --no-cache git && rm -rf /var/cache/apk/*
+RUN apk add --no-cache git
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
