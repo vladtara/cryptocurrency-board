@@ -10,6 +10,7 @@ jobs:
       GITHUB_REPO_URL: https://${{github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
       GITHUB_USERNAME: ${{ github.actor }}
       GITHUB_EMAIL: ${{ vars.EMAIL }}
+      COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
     container:
       image: ghcr.io/${{ github.repository }}:latest
     steps:
