@@ -1,0 +1,25 @@
+[project]
+name = "cryptocurrency-board"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pendulum",
+    "aiohttp",
+    "pandas",
+    "matplotlib",
+    "Jinja2",
+    "gitpython",
+    "httpx",
+]
+[tool.pyright]
+include = ["."]
+exclude = [".venv", "build", "dist", ".git"]
+pythonVersion = "3.13"
+typeCheckingMode = "standard"
+venvPath = "."
+reportMissingTypeStubs = true
+reportOptionalMemberAccess = true
+reportUnknownMemberType = true
+reportUnusedImport = true
