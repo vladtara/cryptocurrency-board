@@ -187,8 +187,11 @@ Features:
 - `matplotlib` — replaced by `pygal`
 - `pendulum` — replaced by `datetime.date.today()`
 
+**Remove:**
+- `gitpython` — replaced by `subprocess.run` + `git` CLI
+
 **Keep:**
-- `httpx`, `pandas`, `Jinja2`, `pydantic`, `gitpython`
+- `httpx`, `pandas`, `Jinja2`, `pydantic`
 
 **Remove file:**
 - `requirements.txt` — replaced by `pyproject.toml` + `uv.lock`
@@ -202,6 +205,31 @@ Features:
 - Dev dependencies: `ruff`, `pytest`
 
 **`.python-version`:** `3.14`
+
+## `init.py` Modernization
+
+Current issues: `subprocess.call` ignores failures silently, `os.chdir` is a global side effect, no error handling on git operations, `gitpython` is a heavy dependency for simple git commands.
+
+Changes:
+- Replace `gitpython` with `subprocess.run` calling `git` directly — simpler, lighter, already available in the Alpine image
+- Use `subprocess.run(..., check=True, cwd=repo_path)` instead of `os.chdir` — no global state mutation
+- Check `main.py` exit code — if it fails, abort before committing bad data
+- Use `logging` consistently (already partially done)
+- Add proper error handling: if clone/pull/commit/push fails, log the error and exit non-zero
+- Use `pathlib.Path` instead of `os.path`
+- Type annotations on all functions
+- Remove `gitpython` from dependencies
+
+Structure:
+```python
+def clone_or_pull(repo_url: str, repo_path: Path) -> None
+def configure_git(repo_path: Path, username: str, email: str) -> None
+def run_main(repo_path: Path) -> None
+def commit_and_push(repo_path: Path) -> None
+def main() -> None  # orchestrator with error handling
+```
+
+Each function raises on failure. `main()` catches exceptions, logs them, and calls `sys.exit(1)`.
 
 ## Migration Steps
 
