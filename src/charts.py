@@ -12,16 +12,6 @@ COIN_COLORS = {
     "ETH-USD": "#4a90d9",  # blue
 }
 
-DARK_STYLE = Style(
-    background="#0d1117",
-    plot_background="#0d1117",
-    foreground="#c9d1d9",
-    foreground_strong="#f0f6fc",
-    foreground_subtle="#8b949e",
-    colors=("#ff8c00",),
-    font_family="monospace",
-)
-
 
 def generate_chart(df: pd.DataFrame, coin: str, output_path: Path) -> None:
     """Generate an SVG line chart for the given price data.
@@ -51,6 +41,8 @@ def generate_chart(df: pd.DataFrame, coin: str, output_path: Path) -> None:
         show_legend=False,
         fill=True,
         style=style,
+        css=[],
+        js=[],
         dots_size=4,
         show_x_guides=False,
         show_y_guides=True,

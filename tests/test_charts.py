@@ -43,8 +43,7 @@ def test_generate_chart_btc_uses_orange(tmp_path: Path) -> None:
     output = tmp_path / "btc-usd.svg"
     generate_chart(df, "BTC-USD", output)
     content = output.read_text()
-    # Pygal uses hex colors in the SVG — orange is #ff8c00 or similar
-    assert "svg" in content.lower()
+    assert "#ff8c00" in content.lower()
 
 
 def test_generate_chart_eth_uses_blue(tmp_path: Path) -> None:
@@ -57,4 +56,18 @@ def test_generate_chart_eth_uses_blue(tmp_path: Path) -> None:
     output = tmp_path / "eth-usd.svg"
     generate_chart(df, "ETH-USD", output)
     content = output.read_text()
-    assert "svg" in content.lower()
+    assert "#4a90d9" in content.lower()
+
+
+def test_generate_chart_svg_is_self_contained(tmp_path: Path) -> None:
+    df = pd.DataFrame(
+        {
+            "date": ["2026-04-01"],
+            "price": [67500.0],
+        }
+    )
+    output = tmp_path / "btc-usd.svg"
+    generate_chart(df, "BTC-USD", output)
+    content = output.read_text()
+    assert "pygal-tooltips" not in content
+    assert "file://" not in content
