@@ -1,25 +1,39 @@
 [project]
 name = "cryptocurrency-board"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.2.0"
+description = "Automated cryptocurrency price monitoring with SVG charts"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
-    "pendulum",
-    "aiohttp",
-    "pandas",
-    "matplotlib",
-    "Jinja2",
-    "gitpython",
     "httpx",
+    "pandas",
+    "Jinja2",
+    "pydantic",
+    "pygal",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "pyright",
+    "respx",
+]
+
 [tool.pyright]
-include = ["."]
+include = ["src", "main.py", "init.py"]
 exclude = [".venv", "build", "dist", ".git"]
-pythonVersion = "3.13"
+pythonVersion = "3.14"
 typeCheckingMode = "standard"
 venvPath = "."
-reportMissingTypeStubs = true
-reportOptionalMemberAccess = true
-reportUnknownMemberType = true
-reportUnusedImport = true
+venv = ".venv"
+
+[tool.ruff]
+target-version = "py314"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
