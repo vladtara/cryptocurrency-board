@@ -23,7 +23,7 @@ def _run(args: list[str], cwd: Path | None = None) -> None:
 def clone_or_pull(repo_url: str, repo_path: Path) -> None:
     if repo_path.exists():
         logger.info("Pulling repository updates.")
-        _run(["git", "-C", str(repo_path), "pull"], cwd=repo_path)
+        _run(["git", "pull", "--ff-only"], cwd=repo_path)
         return
 
     logger.info("Cloning repository.")
@@ -41,6 +41,17 @@ def run_main(repo_path: Path) -> None:
 
 def commit_and_push(repo_path: Path) -> None:
     _run(["git", "add", "README.md", "data", "img"], cwd=repo_path)
+    status = subprocess.run(
+        ["git", "status", "--porcelain"],
+        check=True,
+        cwd=repo_path,
+        capture_output=True,
+        text=True,
+    )
+    if not status.stdout.strip():
+        logger.info("No changes to commit.")
+        return
+
     _run(
         ["git", "commit", "-m", f"Duty Updates {date.today().isoformat()}"],
         cwd=repo_path,
