@@ -1,40 +1,25 @@
-# CryptoCurrency-board
+# Cryptocurrency Board
 
-## Features
+> Last updated: {{ updated_at }} UTC
 
-- cryptocurrency prices for 7 days
-- Historical price charts for 7 days
+## Market Overview
 
-## Today Price
+| Coin | Price (USD) | 24h Change |
+|------|-------------|------------|
+{% for coin in coins %}| **{{ coin.symbol }}** | **${{ "{:,.2f}".format(coin.price) }}** | {% if coin.change_24h >= 0 %}▲ +{{ "{:.1f}".format(coin.change_24h) }}%{% else %}▼ {{ "{:.1f}".format(coin.change_24h) }}%{% endif %} |
+{% endfor %}
 
-| Currency | Price           |
-| -------- | --------------- |
-| **BTC**  | **$ {{ BTC }}** |
-| **ETH**  | **$ {{ ETH }}** |
+## BTC — 7 Day Chart
 
-## BTC chart
+![BTC chart](./img/btc-usd.svg)
 
-![BTC chart](./img/btc-usd.png)
+## ETH — 7 Day Chart
 
-## ETH chart
+![ETH chart](./img/eth-usd.svg)
 
-![ETH chart](./img/eth-usd.png)
+## 7-Day Summary
 
-## Installation
-
-1. Clone the repository: `git clone https://github.com/your-username/cryptocurrency-board.git`
-
-## Usage
-
-```
-pip install -r requirements.txt
-python main.py
-```
-
-## Contributing
-
-Contributions are welcome! If you have any ideas, suggestions, or bug reports, please open an issue or submit a pull request.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more information.
+| Coin | High | Low | Avg |
+|------|------|-----|-----|
+{% for symbol, s in stats.items() %}| **{{ symbol }}** | ${{ "{:,.2f}".format(s.high) }} | ${{ "{:,.2f}".format(s.low) }} | ${{ "{:,.2f}".format(s.avg) }} |
+{% endfor %}
