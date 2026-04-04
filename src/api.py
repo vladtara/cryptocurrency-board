@@ -3,6 +3,7 @@ import logging
 from datetime import date
 
 import httpx
+from pydantic import ValidationError
 
 from src.models import CoinPrice, FetchError
 
@@ -68,7 +69,13 @@ async def fetch_prices(
                 )
             return result
 
-        except (httpx.HTTPStatusError, httpx.RequestError, KeyError) as e:
+        except (
+            httpx.HTTPStatusError,
+            httpx.RequestError,
+            KeyError,
+            ValidationError,
+            ValueError,
+        ) as e:
             last_error = e
             if attempt < max_retries - 1:
                 wait = 2**attempt
