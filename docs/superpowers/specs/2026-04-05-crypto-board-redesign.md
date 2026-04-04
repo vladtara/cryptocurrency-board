@@ -49,9 +49,12 @@ Single CoinGecko call fetches both coins at once:
 
 ```
 GET https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true
+Header: x-cg-demo-api-key: <COINGECKO_API_KEY>
 ```
 
+- API key loaded from `COINGECKO_API_KEY` env var (`.env` locally, GitHub secret in CI)
 - Uses `httpx.AsyncClient` with async context manager
+- Auth header: `x-cg-demo-api-key` attached to all requests
 - Retry with exponential backoff: 3 attempts (1s, 2s, 4s)
 - Returns `dict[str, CoinPrice]`
 - Raises `FetchError` on failure — never writes 0.0 to CSV
@@ -167,7 +170,8 @@ Features:
 - Updated for Python 3.14
 
 **`.github/workflows/cron.yaml`**:
-- Unchanged pattern, daily at 5:50 UTC
+- Daily at 5:50 UTC
+- Add `COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}` to container env
 
 **Dockerfile:**
 - Base image: `python:3.14-alpine`
@@ -230,6 +234,15 @@ def main() -> None  # orchestrator with error handling
 ```
 
 Each function raises on failure. `main()` catches exceptions, logs them, and calls `sys.exit(1)`.
+
+## Environment Variables
+
+- `COINGECKO_API_KEY` — CoinGecko Demo API key (required, loaded from `.env` locally or GitHub secret in CI)
+- `GITHUB_REPO_URL` — Repository URL with embedded auth token (CI only)
+- `GITHUB_USERNAME` — Git commit author name (CI only)
+- `GITHUB_EMAIL` — Git commit author email (CI only)
+
+`.env` is already in `.gitignore`. No additional `.env` loading library needed — `os.getenv()` reads it if sourced, or the CI runtime provides it via secrets.
 
 ## Migration Steps
 
