@@ -9,10 +9,10 @@ Automated cryptocurrency price monitoring system. Fetches BTC and ETH prices fro
 ## Build & Run
 
 ```bash
-pip install -r requirements.txt
+uv sync --all-extras
 
 # Run the main pipeline (fetch prices, update CSVs, generate charts, render README)
-python main.py
+uv run python main.py
 
 # Run with git automation (clone repo to /tmp/update, run main.py, commit and push)
 python init.py
@@ -117,9 +117,9 @@ uv sync
 ## Configuration
 
 - **Package management**: `uv` (replaces former `requirements.txt`)
-- **Python version**: 3.13 (`.python-version`)
+- **Python version**: 3.14 (`.python-version`)
 - **Type checking**: Pyright in standard mode (see `pyproject.toml [tool.pyright]`)
-- **Docker**: Alpine-based image, entrypoint is `init.py`
+- **Docker**: `python:3.14-slim` image, entrypoint is `init.py`
 
 ## APIs
 

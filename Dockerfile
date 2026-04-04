@@ -1,23 +1,24 @@
 # Use the official Python base image
-FROM python:3.12.2-alpine3.19
+FROM python:3.14-slim
 
 ENV GITHUB_REPO_URL=""
 ENV GITHUB_USERNAME=""
 ENV GITHUB_EMAIL=""
 
-# Set the working directory in the container
 WORKDIR /app
 
-RUN apk add --no-cache git && rm -rf /var/cache/apk/*
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential git \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy the requirements file to the container
-COPY requirements.txt .
+RUN pip install --no-cache-dir uv
 
-# Install the Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml uv.lock .python-version ./
 
-# Copy the rest of the application code to the container
+RUN uv sync --frozen --no-dev --no-install-project
+
 COPY init.py .
 
-# Set the entrypoint command for the container
+ENV PATH="/app/.venv/bin:$PATH"
+
 CMD ["python", "init.py"]
