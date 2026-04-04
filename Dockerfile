@@ -1,24 +1,20 @@
-# Use the official Python base image
-FROM python:3.14-slim
+FROM python:3.14-alpine
 
 ENV GITHUB_REPO_URL=""
 ENV GITHUB_USERNAME=""
 ENV GITHUB_EMAIL=""
+ENV COINGECKO_API_KEY=""
 
 WORKDIR /app
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential git \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache git && rm -rf /var/cache/apk/*
 
-RUN pip install --no-cache-dir uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-COPY pyproject.toml uv.lock .python-version ./
+COPY pyproject.toml uv.lock ./
 
-RUN uv sync --frozen --no-dev --no-install-project
+RUN uv sync --frozen --no-dev
 
 COPY init.py .
 
-ENV PATH="/app/.venv/bin:$PATH"
-
-CMD ["python", "init.py"]
+CMD ["uv", "run", "python", "init.py"]
