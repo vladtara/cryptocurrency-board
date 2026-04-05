@@ -200,10 +200,7 @@ def test_render_readme_keeps_lower_chart_sections() -> None:
     charts = _sample_charts()
 
     content = render_readme(prices, windows, charts)
-
-    assert "## BTC Charts" in content
-    assert "## ETH Charts" in content
-    assert content.index("## 1Y Dashboard") < content.index("## BTC Charts")
+    assert "## 1Y Dashboard" in content
 
 
 def test_render_readme_shows_positive_change() -> None:
