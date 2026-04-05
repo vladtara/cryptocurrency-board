@@ -65,6 +65,7 @@ Columns:
 - Volatility
 
 This section should use the existing `7D` metrics already computed by the pipeline. It should not include charts. The intent is a fast numeric weekly dashboard, not a visual block.
+This section should also render the 7-day BTC and ETH charts directly below the table so the weekly view is self-contained.
 
 ### Extended Windows
 
@@ -99,7 +100,7 @@ Reason:
 - this prevents the top of the README from becoming too tall
 - users can scan numbers first, then inspect visual trend shapes
 
-No change is needed to the chart inventory for this redesign. The current `30D`, `180D`, and `1Y` charts remain valid.
+The lower chart sections should continue to show the longer-horizon charts only. The 7-day charts belong directly under `7-Day Dashboard`, not in the lower per-coin chart sections.
 
 ### Deep Stats
 
@@ -153,7 +154,7 @@ Tests should focus on rendered output, not just intermediate structures.
 
 - No change to fetched data sources
 - No new metrics
-- No new charts
+- No new metrics
 - No change to the main pipeline beyond what is required to support the README structure
 - No visual/browser UI beyond the generated markdown README
 

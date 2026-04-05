@@ -16,6 +16,13 @@
 |------|-----|-----|-----|--------|----------|------------|
 | **BTC** | ${{ "{:,.2f}".format(window_rows["7D"].BTC.min) }} | ${{ "{:,.2f}".format(window_rows["7D"].BTC.max) }} | ${{ "{:,.2f}".format(window_rows["7D"].BTC.avg) }} | ${{ "{:,.2f}".format(window_rows["7D"].BTC.median) }} | {{ "{:+.1f}".format(window_rows["7D"].BTC.return_pct) }}% | {{ "{:.2f}".format(window_rows["7D"].BTC.volatility) }}% |
 | **ETH** | ${{ "{:,.2f}".format(window_rows["7D"].ETH.min) }} | ${{ "{:,.2f}".format(window_rows["7D"].ETH.max) }} | ${{ "{:,.2f}".format(window_rows["7D"].ETH.avg) }} | ${{ "{:,.2f}".format(window_rows["7D"].ETH.median) }} | {{ "{:+.1f}".format(window_rows["7D"].ETH.return_pct) }}% | {{ "{:.2f}".format(window_rows["7D"].ETH.volatility) }}% |
+
+{% for chart in charts.BTC %}{% if chart.label == "7D" %}![BTC 7D chart]({{ chart.path }})
+
+{% endif %}{% endfor %}
+{% for chart in charts.ETH %}{% if chart.label == "7D" %}![ETH 7D chart]({{ chart.path }})
+
+{% endif %}{% endfor %}
 {% endif %}
 
 ## Extended Windows
@@ -34,15 +41,15 @@
 
 ## BTC Charts
 
-{% for chart in charts.BTC %}![BTC {{ chart.label }} chart]({{ chart.path }})
+{% for chart in charts.BTC %}{% if chart.label != "7D" %}![BTC {{ chart.label }} chart]({{ chart.path }})
 
-{% endfor %}
+{% endif %}{% endfor %}
 
 ## ETH Charts
 
-{% for chart in charts.ETH %}![ETH {{ chart.label }} chart]({{ chart.path }})
+{% for chart in charts.ETH %}{% if chart.label != "7D" %}![ETH {{ chart.label }} chart]({{ chart.path }})
 
-{% endfor %}
+{% endif %}{% endfor %}
 
 {% if "1Y" in window_rows %}
 ## Deep Stats

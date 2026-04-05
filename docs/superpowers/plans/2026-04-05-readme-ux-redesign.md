@@ -4,7 +4,7 @@
 
 **Goal:** Restructure the generated README so the 7-day dashboard is the primary analytics block, while longer-horizon windows remain available in a secondary section.
 
-**Architecture:** Keep the existing pipeline and render contract intact. Implement the UX change entirely in the README template and README rendering tests by splitting the current multi-window summary into a dedicated `7-Day Dashboard` section and a separate `Extended Windows` section for `30D`, `90D`, `180D`, and `1Y`.
+**Architecture:** Keep the existing render contract intact, but extend the pipeline so chart metadata also includes `7D`. Implement the UX change by rendering the `7D` table and `7D` charts together in a dedicated dashboard section, keeping `30D`, `90D`, `180D`, and `1Y` in `Extended Windows`, and keeping the lower BTC/ETH chart sections limited to longer horizons.
 
 **Tech Stack:** Python 3.13, Jinja2, pytest, uv
 
@@ -14,8 +14,9 @@
 
 | File | Action | Responsibility |
 |------|--------|---------------|
-| `templates/readme.md` | Modify | Reorder the README and split 7D metrics from longer-horizon windows |
-| `tests/test_readme.py` | Modify | Verify new section structure and prevent 7D duplication |
+| `main.py` | Modify | Generate `7D` chart metadata and artifacts |
+| `templates/readme.md` | Modify | Reorder the README and place 7D charts under the weekly dashboard |
+| `tests/test_readme.py` | Modify | Verify new section structure, 7D chart placement, and longer-horizon chart filtering |
 
 ---
 
