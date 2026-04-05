@@ -3,6 +3,7 @@ docs/*
 docs/superpowers/*
 .superpowers/*
 .codex-review/*
+.worktrees/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
