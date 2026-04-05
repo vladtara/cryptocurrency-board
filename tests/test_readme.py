@@ -67,6 +67,28 @@ def _sample_windows() -> dict[str, dict[str, dict[str, float | str]]]:
                 "volatility": 3.0,
             },
         },
+        "1Y": {
+            "BTC": {
+                "min": 1.0,
+                "max": 2.0,
+                "avg": 1.5,
+                "median": 1.5,
+                "return_pct": 10.0,
+                "volatility": 3.0,
+                "range_pct": 12.3,
+                "drawdown_pct": 4.5,
+            },
+            "ETH": {
+                "min": 1.0,
+                "max": 2.0,
+                "avg": 1.5,
+                "median": 1.5,
+                "return_pct": 10.0,
+                "volatility": 3.0,
+                "range_pct": 9.8,
+                "drawdown_pct": 3.2,
+            },
+        },
     }
 
 
@@ -148,6 +170,18 @@ def test_render_readme_contains_summary_stats() -> None:
     assert "$2.00" in content
     assert "+10.0%" in content
     assert "Multi-Window Summary" in content
+
+
+def test_render_readme_contains_deep_stats() -> None:
+    prices = _sample_prices()
+    windows = _sample_windows()
+    charts = _sample_charts()
+
+    content = render_readme(prices, windows, charts)
+
+    assert "## Deep Stats" in content
+    assert "Range %" in content
+    assert "Drawdown %" in content
 
 
 def test_render_readme_contains_timestamp() -> None:
