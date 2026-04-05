@@ -9,9 +9,19 @@
 {% for coin in coins %}| **{{ coin.symbol }}** | **${{ "{:,.2f}".format(coin.price) }}** | {% if coin.change_24h >= 0 %}▲ +{{ "{:.1f}".format(coin.change_24h) }}%{% else %}▼ {{ "{:.1f}".format(coin.change_24h) }}%{% endif %} |
 {% endfor %}
 
-## Multi-Window Summary
+## 7-Day Dashboard
+
+{% if "7D" in window_rows %}
+| Coin | Min | Max | Avg | Median | Return % | Volatility |
+|------|-----|-----|-----|--------|----------|------------|
+| **BTC** | ${{ "{:,.2f}".format(window_rows["7D"].BTC.min) }} | ${{ "{:,.2f}".format(window_rows["7D"].BTC.max) }} | ${{ "{:,.2f}".format(window_rows["7D"].BTC.avg) }} | ${{ "{:,.2f}".format(window_rows["7D"].BTC.median) }} | {{ "{:+.1f}".format(window_rows["7D"].BTC.return_pct) }}% | {{ "{:.2f}".format(window_rows["7D"].BTC.volatility) }}% |
+| **ETH** | ${{ "{:,.2f}".format(window_rows["7D"].ETH.min) }} | ${{ "{:,.2f}".format(window_rows["7D"].ETH.max) }} | ${{ "{:,.2f}".format(window_rows["7D"].ETH.avg) }} | ${{ "{:,.2f}".format(window_rows["7D"].ETH.median) }} | {{ "{:+.1f}".format(window_rows["7D"].ETH.return_pct) }}% | {{ "{:.2f}".format(window_rows["7D"].ETH.volatility) }}% |
+{% endif %}
+
+## Extended Windows
 
 {% for window_label, window in window_rows.items() %}
+{% if window_label != "7D" %}
 ### {{ window_label }}
 
 | Coin | Min | Max | Avg | Median | Return % | Volatility |
@@ -19,6 +29,7 @@
 | **BTC** | ${{ "{:,.2f}".format(window.BTC.min) }} | ${{ "{:,.2f}".format(window.BTC.max) }} | ${{ "{:,.2f}".format(window.BTC.avg) }} | ${{ "{:,.2f}".format(window.BTC.median) }} | {{ "{:+.1f}".format(window.BTC.return_pct) }}% | {{ "{:.2f}".format(window.BTC.volatility) }}% |
 | **ETH** | ${{ "{:,.2f}".format(window.ETH.min) }} | ${{ "{:,.2f}".format(window.ETH.max) }} | ${{ "{:,.2f}".format(window.ETH.avg) }} | ${{ "{:,.2f}".format(window.ETH.median) }} | {{ "{:+.1f}".format(window.ETH.return_pct) }}% | {{ "{:.2f}".format(window.ETH.volatility) }}% |
 
+{% endif %}
 {% endfor %}
 
 ## BTC Charts
