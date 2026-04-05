@@ -4,10 +4,9 @@
 
 ## Market Overview
 
-| Coin                    | Price (USD)           | 24h Change                              |
-| ----------------------- | --------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| {% for coin in coins %} | **{{ coin.symbol }}** | **${{ "{:,.2f}".format(coin.price) }}** | {% if coin.change_24h >= 0 %}▲ +{{ "{:.1f}".format(coin.change_24h) }}%{% else %}▼ {{ "{:.1f}".format(coin.change_24h) }}%{% endif %} |
-
+| Coin | Price (USD) | 24h Change |
+| ---- | ----------- | ---------- |
+{% for coin in coins %}| **{{ coin.symbol }}** | **${{ "{:,.2f}".format(coin.price) }}** | {% if coin.change_24h >= 0 %}▲ +{{ "{:.1f}".format(coin.change_24h) }}%{% else %}▼ {{ "{:.1f}".format(coin.change_24h) }}%{% endif %} |
 {% endfor %}
 
 ## 7-Day Dashboard
