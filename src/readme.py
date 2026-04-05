@@ -11,14 +11,16 @@ logger = logging.getLogger(__name__)
 
 def render_readme(
     prices: dict[str, CoinPrice],
-    stats: dict[str, dict[str, float]],
+    windows: dict[str, dict[str, dict[str, float | str]]],
+    charts: dict[str, list[dict[str, str]]],
     template_dir: str = "./templates",
 ) -> str:
     """Render the README markdown content.
 
     Args:
         prices: Mapping of coin identifiers to current prices.
-        stats: Mapping of coin symbols to summary statistics.
+        windows: Mapping of window labels to per-coin summary statistics.
+        charts: Mapping of coin symbols to chart metadata.
         template_dir: Directory containing the README template.
 
     Returns:
@@ -28,12 +30,17 @@ def render_readme(
     template = environment.get_template("readme.md")
     coins = [prices["bitcoin"], prices["ethereum"]]
     updated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M")
-    summary_stats = {
-        symbol: SimpleNamespace(**values) for symbol, values in stats.items()
+    window_rows = {
+        window_label: {
+            symbol: SimpleNamespace(**metrics)
+            for symbol, metrics in metrics_by_symbol.items()
+        }
+        for window_label, metrics_by_symbol in windows.items()
     }
     content = template.render(
         coins=coins,
-        stats=summary_stats,
+        charts=charts,
+        window_rows=window_rows,
         updated_at=updated_at,
     )
     logger.info("Rendered README.md")
