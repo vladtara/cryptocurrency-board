@@ -19,13 +19,19 @@ def _sanitize_svg(svg: str) -> str:
     return re.sub(r'"file://[^"]+"', '""', svg)
 
 
-def generate_chart(df: pd.DataFrame, coin: str, output_path: Path) -> None:
+def generate_chart(
+    df: pd.DataFrame,
+    coin: str,
+    output_path: Path,
+    horizon_label: str = "7D",
+) -> None:
     """Generate an SVG line chart for the given price data.
 
     Args:
         df: DataFrame with 'date' and 'price' columns.
         coin: Coin pair name (e.g. "BTC-USD").
         output_path: Path to write the SVG file.
+        horizon_label: Label to use in the chart title.
     """
     color = COIN_COLORS.get(coin, "#ff8c00")
     style = Style(
@@ -39,7 +45,7 @@ def generate_chart(df: pd.DataFrame, coin: str, output_path: Path) -> None:
     )
 
     chart = pygal.Line(
-        title=f"7 Day Price — {coin}",
+        title=f"{horizon_label} Price — {coin}",
         x_title="Date",
         y_title="Price (USD)",
         width=800,

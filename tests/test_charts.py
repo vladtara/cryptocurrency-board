@@ -85,3 +85,18 @@ def test_generate_chart_embeds_render_styles(tmp_path: Path) -> None:
     content = output.read_text().lower()
     assert ".graph &gt; .background{fill:#0d1117}" in content
     assert "stroke:#ff8c00" in content
+
+
+def test_generate_chart_supports_custom_horizon_label(tmp_path: Path) -> None:
+    df = pd.DataFrame(
+        {
+            "date": ["2026-04-01", "2026-04-02", "2026-04-03"],
+            "price": [65000.0, 66000.0, 67500.0],
+        }
+    )
+    output = tmp_path / "btc-usd-30d.svg"
+
+    generate_chart(df, "BTC-USD", output, horizon_label="30D")
+
+    content = output.read_text()
+    assert "30D Price" in content
