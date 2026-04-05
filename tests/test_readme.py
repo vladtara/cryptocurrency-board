@@ -172,6 +172,7 @@ def test_run_builds_named_windows_and_selected_charts(
         "1Y": 365,
     }
     captured: dict[str, object] = {}
+    chart_calls: list[dict[str, str]] = []
     real_template_dir = Path(__file__).resolve().parents[1] / "templates"
     history = pd.DataFrame(
         {
@@ -205,7 +206,14 @@ def test_run_builds_named_windows_and_selected_charts(
         output_path: Path,
         horizon_label: str = "7D",
     ) -> None:
-        del df, coin, output_path, horizon_label
+        chart_calls.append(
+            {
+                "coin": coin,
+                "path": f"./{output_path.as_posix()}",
+                "horizon_label": horizon_label,
+                "rows": str(len(df)),
+            }
+        )
 
     def fake_render_readme(
         prices: dict[str, CoinPrice],
@@ -249,6 +257,54 @@ def test_run_builds_named_windows_and_selected_charts(
     assert "./img/eth-usd-30d.svg" in rendered
     assert "./img/eth-usd-180d.svg" in rendered
     assert "./img/eth-usd-1y.svg" in rendered
+    assert chart_calls == [
+        {
+            "coin": "BTC-USD",
+            "path": "./img/btc-usd-30d.svg",
+            "horizon_label": "30D",
+            "rows": "2",
+        },
+        {
+            "coin": "BTC-USD",
+            "path": "./img/btc-usd-180d.svg",
+            "horizon_label": "180D",
+            "rows": "2",
+        },
+        {
+            "coin": "BTC-USD",
+            "path": "./img/btc-usd-1y.svg",
+            "horizon_label": "1Y",
+            "rows": "2",
+        },
+        {
+            "coin": "ETH-USD",
+            "path": "./img/eth-usd-30d.svg",
+            "horizon_label": "30D",
+            "rows": "2",
+        },
+        {
+            "coin": "ETH-USD",
+            "path": "./img/eth-usd-180d.svg",
+            "horizon_label": "180D",
+            "rows": "2",
+        },
+        {
+            "coin": "ETH-USD",
+            "path": "./img/eth-usd-1y.svg",
+            "horizon_label": "1Y",
+            "rows": "2",
+        },
+    ]
+    assert {call["horizon_label"] for call in chart_calls} == {"30D", "180D", "1Y"}
+    assert {call["path"] for call in chart_calls} == {
+        "./img/btc-usd-30d.svg",
+        "./img/btc-usd-180d.svg",
+        "./img/btc-usd-1y.svg",
+        "./img/eth-usd-30d.svg",
+        "./img/eth-usd-180d.svg",
+        "./img/eth-usd-1y.svg",
+    }
+    assert all(call["horizon_label"] not in {"7D", "90D"} for call in chart_calls)
     assert captured["window_labels"] == list(windows)
     assert set(captured["windows"]) == set(windows)
     assert set(captured["windows"]["7D"]) == {"BTC", "ETH"}
