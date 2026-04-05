@@ -33,7 +33,9 @@ async def test_fetch_prices_success() -> None:
 
 @respx.mock
 @pytest.mark.asyncio
-async def test_fetch_prices_logs_formatted_prices(caplog: pytest.LogCaptureFixture) -> None:
+async def test_fetch_prices_logs_formatted_prices(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     respx.get(COINGECKO_URL).mock(
         return_value=httpx.Response(
             200,
