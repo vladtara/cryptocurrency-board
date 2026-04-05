@@ -1,4 +1,5 @@
 import logging
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -11,6 +12,11 @@ COIN_COLORS = {
     "BTC-USD": "#ff8c00",  # orange
     "ETH-USD": "#4a90d9",  # blue
 }
+
+
+def _sanitize_svg(svg: str) -> str:
+    """Remove local file URI references from embedded pygal config."""
+    return re.sub(r'"file://[^"]+"', '""', svg)
 
 
 def generate_chart(df: pd.DataFrame, coin: str, output_path: Path) -> None:
@@ -41,7 +47,6 @@ def generate_chart(df: pd.DataFrame, coin: str, output_path: Path) -> None:
         show_legend=False,
         fill=True,
         style=style,
-        css=[],
         js=[],
         dots_size=4,
         show_x_guides=False,
@@ -55,5 +60,8 @@ def generate_chart(df: pd.DataFrame, coin: str, output_path: Path) -> None:
     chart.add(coin, prices)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    chart.render_to_file(str(output_path))
+    output_path.write_text(
+        _sanitize_svg(chart.render(is_unicode=True)),
+        encoding="utf-8",
+    )
     logger.info("Generated chart: %s", output_path.name)

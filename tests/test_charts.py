@@ -71,3 +71,17 @@ def test_generate_chart_svg_is_self_contained(tmp_path: Path) -> None:
     content = output.read_text()
     assert "pygal-tooltips" not in content
     assert "file://" not in content
+
+
+def test_generate_chart_embeds_render_styles(tmp_path: Path) -> None:
+    df = pd.DataFrame(
+        {
+            "date": ["2026-04-01", "2026-04-02"],
+            "price": [65000.0, 67500.0],
+        }
+    )
+    output = tmp_path / "btc-usd.svg"
+    generate_chart(df, "BTC-USD", output)
+    content = output.read_text().lower()
+    assert ".graph &gt; .background{fill:#0d1117}" in content
+    assert "stroke:#ff8c00" in content
