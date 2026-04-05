@@ -151,12 +151,12 @@ def test_compute_window_metrics_returns_primary_metrics() -> None:
     df = pd.DataFrame(
         {
             "date": [
-                "2026-04-05",
-                "2026-04-04",
                 "2026-04-03",
+                "2026-04-05",
                 "2026-04-02",
+                "2026-04-04",
             ],
-            "price": [110.0, 100.0, 105.0, 95.0],
+            "price": [105.0, 110.0, 95.0, 100.0],
             "change_24h": [0.0, 0.0, 0.0, 0.0],
         }
     )
@@ -175,22 +175,23 @@ def test_compute_window_metrics_supports_secondary_metrics() -> None:
     df = pd.DataFrame(
         {
             "date": [
-                "2026-04-05",
-                "2026-04-04",
                 "2026-04-03",
+                "2026-04-05",
                 "2026-04-02",
+                "2026-04-04",
             ],
-            "price": [110.0, 100.0, 105.0, 95.0],
+            "price": [105.0, 110.0, 95.0, 100.0],
             "change_24h": [0.0, 0.0, 0.0, 0.0],
         }
     )
 
     metrics = compute_window_metrics(df)
 
-    assert "range_pct" in metrics
-    assert "drawdown_pct" in metrics
-    assert "up_day_ratio" in metrics
-    assert "current_streak" in metrics
+    assert metrics["range_pct"] == pytest.approx(15.7894736842)
+    assert metrics["drawdown_pct"] == pytest.approx(4.7619047619)
+    assert metrics["up_day_ratio"] == pytest.approx(66.6666666667)
+    assert metrics["current_streak"] == "up:1"
+    assert metrics["volatility"] == pytest.approx(8.6787146527)
 
 
 def test_compute_window_metrics_handles_single_row() -> None:

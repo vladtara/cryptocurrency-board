@@ -62,7 +62,11 @@ def load_named_windows(
 
 def compute_window_metrics(df: pd.DataFrame) -> dict[str, float | str]:
     """Compute dashboard metrics for a history window."""
-    prices = df["price"].astype(float)
+    ordered = df
+    if not ordered.empty and "date" in ordered.columns:
+        ordered = ordered.sort_values("date", ascending=False, kind="stable").reset_index(drop=True)
+
+    prices = ordered["price"].astype(float)
     if prices.empty:
         return {
             "min": 0.0,
