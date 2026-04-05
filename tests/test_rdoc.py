@@ -7,7 +7,7 @@ import pytest
 
 import main as pipeline
 from src.models import CoinPrice
-from src.readme import render_readme
+from src.rdoc import render_readme
 
 
 def _sample_prices() -> dict[str, CoinPrice]:

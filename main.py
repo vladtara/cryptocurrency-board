@@ -6,7 +6,7 @@ from pathlib import Path
 from src.api import fetch_prices
 from src.charts import generate_chart
 from src.models import FetchError
-from src.readme import render_readme
+from src.rdoc import render_readme
 from src.storage import (
     append_price,
     cleanup_zeros,
