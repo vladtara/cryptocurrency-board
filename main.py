@@ -3,19 +3,34 @@ import logging
 import os
 from pathlib import Path
 
-import pandas as pd
-
 from src.api import fetch_prices
 from src.charts import generate_chart
 from src.models import FetchError
 from src.readme import render_readme
-from src.storage import append_price, cleanup_zeros, load_history
+from src.storage import (
+    append_price,
+    cleanup_zeros,
+    compute_window_metrics,
+    load_named_windows,
+)
 
 DATA_DIR = Path("data")
 IMG_DIR = Path("img")
 COIN_SLUGS = {
     "bitcoin": "btc-usd",
     "ethereum": "eth-usd",
+}
+WINDOWS = {
+    "7D": 7,
+    "30D": 30,
+    "90D": 90,
+    "180D": 180,
+    "1Y": 365,
+}
+CHART_WINDOWS = {
+    "30D": 30,
+    "180D": 180,
+    "1Y": 365,
 }
 
 logger = logging.getLogger(__name__)
@@ -33,16 +48,6 @@ def configure_logging() -> None:
     root_logger.setLevel(logging.INFO)
 
 
-def compute_stats(df: pd.DataFrame) -> dict[str, float]:
-    """Compute summary statistics for a coin history DataFrame."""
-    prices = df["price"].astype(float)
-    return {
-        "high": float(prices.max()),
-        "low": float(prices.min()),
-        "avg": float(prices.mean()),
-    }
-
-
 async def run() -> None:
     """Fetch prices, update local artifacts, and render the README."""
     DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -53,23 +58,35 @@ async def run() -> None:
         raise RuntimeError("COINGECKO_API_KEY environment variable is required")
 
     prices = await fetch_prices(api_key)
-    stats: dict[str, dict[str, float]] = {}
+    window_stats: dict[str, dict[str, dict[str, float | str]]] = {
+        label: {} for label in WINDOWS
+    }
+    chart_paths: dict[str, list[dict[str, str]]] = {"BTC": [], "ETH": []}
 
     for coin_id, coin_price in prices.items():
         slug = COIN_SLUGS[coin_id]
         csv_path = DATA_DIR / f"{slug}.csv"
-        svg_path = IMG_DIR / f"{slug}.svg"
         pair = slug.upper()
 
         cleanup_zeros(csv_path)
         append_price(coin_price, csv_path)
         cleanup_zeros(csv_path)
 
-        history = load_history(csv_path, days=7)
-        stats[coin_price.symbol] = compute_stats(history)
-        generate_chart(history, pair, svg_path)
+        windows = load_named_windows(csv_path, WINDOWS)
+        for label, history in windows.items():
+            window_stats[label][coin_price.symbol] = compute_window_metrics(history)
 
-    readme_content = render_readme(prices, stats)
+        for label, days in CHART_WINDOWS.items():
+            history = windows[label]
+            if history.empty:
+                continue
+            svg_path = IMG_DIR / f"{slug}-{label.lower()}.svg"
+            generate_chart(history, pair, svg_path, horizon_label=label)
+            chart_paths[coin_price.symbol].append(
+                {"label": label, "path": f"./{svg_path.as_posix()}"}
+            )
+
+    readme_content = render_readme(prices, window_stats, chart_paths)
     Path("README.md").write_text(readme_content, encoding="utf-8")
     logger.info("Wrote README.md")
 
