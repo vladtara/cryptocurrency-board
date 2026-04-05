@@ -62,10 +62,10 @@ async def fetch_prices(
                     date=today,
                 )
                 logger.info(
-                    "Fetched %s: $%,.2f (%+.1f%%)",
+                    "Fetched %s: $%s (%s%%)",
                     symbol,
-                    result[coin_id].price,
-                    result[coin_id].change_24h,
+                    f"{result[coin_id].price:,.2f}",
+                    f"{result[coin_id].change_24h:+.1f}",
                 )
             return result
 

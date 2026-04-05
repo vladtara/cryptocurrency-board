@@ -33,6 +33,26 @@ async def test_fetch_prices_success() -> None:
 
 @respx.mock
 @pytest.mark.asyncio
+async def test_fetch_prices_logs_formatted_prices(caplog: pytest.LogCaptureFixture) -> None:
+    respx.get(COINGECKO_URL).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "bitcoin": {"usd": 66876.0, "usd_24h_change": -0.2357752960385911},
+                "ethereum": {"usd": 3450.0, "usd_24h_change": 1.2},
+            },
+        )
+    )
+
+    with caplog.at_level("INFO", logger="src.api"):
+        await fetch_prices(api_key="test-key")
+
+    assert "Fetched BTC: $66,876.00 (-0.2%)" in caplog.text
+    assert "Fetched ETH: $3,450.00 (+1.2%)" in caplog.text
+
+
+@respx.mock
+@pytest.mark.asyncio
 async def test_fetch_prices_api_error_raises() -> None:
     respx.get(COINGECKO_URL).mock(
         return_value=httpx.Response(500, text="Internal Server Error")
