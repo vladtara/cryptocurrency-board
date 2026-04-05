@@ -81,7 +81,7 @@ Prepends a new price row to the top of the CSV. Creates the file if missing.
 
 ### `load_history(filepath: Path, days: int = 7) -> pd.DataFrame`
 
-Returns the last *N* days from CSV. Empty `DataFrame` if file is missing.
+Returns the last _N_ days from CSV. Empty `DataFrame` if file is missing.
 
 ### `load_full_history(filepath: Path) -> pd.DataFrame`
 
@@ -105,7 +105,7 @@ Computes 10 statistical metrics from a price `DataFrame`:
 | `median`         | `float` | Median price                          |
 | `return_pct`     | `float` | Period return percentage              |
 | `volatility`     | `float` | Daily return std dev × 100            |
-| `range_pct`      | `float` | (max − min) / min × 100              |
+| `range_pct`      | `float` | (max − min) / min × 100               |
 | `drawdown_pct`   | `float` | Maximum peak-to-trough percentage     |
 | `up_day_ratio`   | `float` | Fraction of days with positive change |
 | `current_streak` | `str`   | Direction and length, e.g. `"up:3"`   |
@@ -136,12 +136,12 @@ Creates parent directories automatically.
 
 ### `render_readme(prices, windows, charts, template_dir="./templates") -> str`
 
-| Parameter      | Type                                              | Description                      |
-| -------------- | ------------------------------------------------- | -------------------------------- |
-| `prices`       | `dict[str, CoinPrice]`                            | Coin ID → current price          |
-| `windows`      | `dict[str, dict[str, dict[str, float \| str]]]`   | Window → symbol → metrics dict   |
-| `charts`       | `dict[str, list[dict[str, str]]]`                 | Symbol → list of `{label, path}` |
-| `template_dir` | `str`                                             | Path to Jinja2 templates         |
+| Parameter      | Type                                            | Description                      |
+| -------------- | ----------------------------------------------- | -------------------------------- |
+| `prices`       | `dict[str, CoinPrice]`                          | Coin ID → current price          |
+| `windows`      | `dict[str, dict[str, dict[str, float \| str]]]` | Window → symbol → metrics dict   |
+| `charts`       | `dict[str, list[dict[str, str]]]`               | Symbol → list of `{label, path}` |
+| `template_dir` | `str`                                           | Path to Jinja2 templates         |
 
 Renders `templates/readme.md` with market data, analytics tables, and chart references.
 Metrics dicts are converted to `SimpleNamespace` objects for dot-access in templates.
