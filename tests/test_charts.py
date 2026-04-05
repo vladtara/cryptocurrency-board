@@ -87,7 +87,7 @@ def test_generate_chart_embeds_render_styles(tmp_path: Path) -> None:
     assert "stroke:#ff8c00" in content
 
 
-def test_generate_chart_supports_custom_horizon_label(tmp_path: Path) -> None:
+def test_generate_chart_supports_custom_titles_and_horizons(tmp_path: Path) -> None:
     df = pd.DataFrame(
         {
             "date": ["2026-04-01", "2026-04-02", "2026-04-03"],
@@ -100,3 +100,4 @@ def test_generate_chart_supports_custom_horizon_label(tmp_path: Path) -> None:
 
     content = output.read_text()
     assert "30D Price" in content
+    assert output.name == "btc-usd-30d.svg"
