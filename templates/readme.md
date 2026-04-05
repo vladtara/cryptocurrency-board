@@ -4,9 +4,10 @@
 
 ## Market Overview
 
-| Coin | Price (USD) | 24h Change |
-|------|-------------|------------|
-{% for coin in coins %}| **{{ coin.symbol }}** | **${{ "{:,.2f}".format(coin.price) }}** | {% if coin.change_24h >= 0 %}▲ +{{ "{:.1f}".format(coin.change_24h) }}%{% else %}▼ {{ "{:.1f}".format(coin.change_24h) }}%{% endif %} |
+| Coin                    | Price (USD)           | 24h Change                              |
+| ----------------------- | --------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| {% for coin in coins %} | **{{ coin.symbol }}** | **${{ "{:,.2f}".format(coin.price) }}** | {% if coin.change_24h >= 0 %}▲ +{{ "{:.1f}".format(coin.change_24h) }}%{% else %}▼ {{ "{:.1f}".format(coin.change_24h) }}%{% endif %} |
+
 {% endfor %}
 
 ## 7-Day Dashboard
@@ -77,25 +78,17 @@
 ![ETH 1Y chart](./img/eth-usd-1y.svg)
 {% endif %}
 
-## BTC Charts
-
-{% for chart in charts.BTC %}![BTC {{ chart.label }} chart]({{ chart.path }})
-
-{% endfor %}
-
-## ETH Charts
-
-{% for chart in charts.ETH %}![ETH {{ chart.label }} chart]({{ chart.path }})
-
-{% endfor %}
-
 {% if "1Y" in window_rows %}
+
+---
+
 ## Deep Stats
 
 ### 1Y
 
-| Coin | Range % | Drawdown % |
-|------|---------|------------|
+| Coin    | Range %                                                 | Drawdown %                                                 |
+| ------- | ------------------------------------------------------- | ---------------------------------------------------------- |
 | **BTC** | {{ "{:.1f}".format(window_rows["1Y"].BTC.range_pct) }}% | {{ "{:.1f}".format(window_rows["1Y"].BTC.drawdown_pct) }}% |
 | **ETH** | {{ "{:.1f}".format(window_rows["1Y"].ETH.range_pct) }}% | {{ "{:.1f}".format(window_rows["1Y"].ETH.drawdown_pct) }}% |
+
 {% endif %}
