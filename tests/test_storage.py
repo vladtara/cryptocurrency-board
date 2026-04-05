@@ -125,8 +125,8 @@ def test_load_named_windows_returns_requested_ranges(tmp_path: Path) -> None:
     filepath = tmp_path / "btc.csv"
     pd.DataFrame(
         {
-            "date": [f"2026-01-{day:02d}" for day in range(10, 0, -1)],
-            "price": [float(value) for value in range(10, 0, -1)],
+            "date": [f"2026-01-{day:02d}" for day in range(1, 11)],
+            "price": [float(value) for value in range(1, 11)],
             "change_24h": [0.0] * 10,
         }
     ).to_csv(filepath, index=False)
@@ -134,6 +134,15 @@ def test_load_named_windows_returns_requested_ranges(tmp_path: Path) -> None:
     windows = load_named_windows(filepath, {"7D": 7, "30D": 30})
 
     assert list(windows) == ["7D", "30D"]
+    assert list(windows["7D"]["date"]) == [
+        "2026-01-10",
+        "2026-01-09",
+        "2026-01-08",
+        "2026-01-07",
+        "2026-01-06",
+        "2026-01-05",
+        "2026-01-04",
+    ]
     assert len(windows["7D"]) == 7
     assert len(windows["30D"]) == 10
 

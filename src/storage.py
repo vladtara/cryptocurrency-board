@@ -55,6 +55,8 @@ def load_named_windows(
 ) -> dict[str, pd.DataFrame]:
     """Load named history windows from newest rows in a CSV."""
     history = load_full_history(filepath)
+    if not history.empty and "date" in history.columns:
+        history = history.sort_values("date", ascending=False, kind="stable").reset_index(drop=True)
     return {label: history.head(days).copy() for label, days in windows.items()}
 
 
