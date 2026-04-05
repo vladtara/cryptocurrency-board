@@ -67,6 +67,42 @@ def _sample_windows() -> dict[str, dict[str, dict[str, float | str]]]:
                 "volatility": 3.0,
             },
         },
+        "90D": {
+            "BTC": {
+                "min": 10.0,
+                "max": 20.0,
+                "avg": 15.0,
+                "median": 14.0,
+                "return_pct": 8.0,
+                "volatility": 4.0,
+            },
+            "ETH": {
+                "min": 30.0,
+                "max": 40.0,
+                "avg": 35.0,
+                "median": 34.0,
+                "return_pct": -2.0,
+                "volatility": 5.0,
+            },
+        },
+        "180D": {
+            "BTC": {
+                "min": 50.0,
+                "max": 60.0,
+                "avg": 55.0,
+                "median": 54.0,
+                "return_pct": 12.0,
+                "volatility": 6.0,
+            },
+            "ETH": {
+                "min": 70.0,
+                "max": 80.0,
+                "avg": 75.0,
+                "median": 74.0,
+                "return_pct": 1.0,
+                "volatility": 7.0,
+            },
+        },
         "1Y": {
             "BTC": {
                 "min": 1.0,
@@ -97,10 +133,16 @@ def _sample_charts() -> dict[str, list[dict[str, str]]]:
         "BTC": [
             {"label": "7D", "path": "./img/btc-usd-7d.svg"},
             {"label": "30D", "path": "./img/btc-usd-30d.svg"},
+            {"label": "90D", "path": "./img/btc-usd-90d.svg"},
+            {"label": "180D", "path": "./img/btc-usd-180d.svg"},
+            {"label": "1Y", "path": "./img/btc-usd-1y.svg"},
         ],
         "ETH": [
             {"label": "7D", "path": "./img/eth-usd-7d.svg"},
             {"label": "30D", "path": "./img/eth-usd-30d.svg"},
+            {"label": "90D", "path": "./img/eth-usd-90d.svg"},
+            {"label": "180D", "path": "./img/eth-usd-180d.svg"},
+            {"label": "1Y", "path": "./img/eth-usd-1y.svg"},
         ],
     }
 
@@ -116,7 +158,7 @@ def test_render_readme_contains_prices() -> None:
     assert "$3,450.00" in content
 
 
-def test_render_readme_promotes_seven_day_dashboard() -> None:
+def test_render_readme_uses_per_horizon_dashboard_sections() -> None:
     prices = _sample_prices()
     windows = _sample_windows()
     charts = _sample_charts()
@@ -124,38 +166,44 @@ def test_render_readme_promotes_seven_day_dashboard() -> None:
     content = render_readme(prices, windows, charts)
 
     assert "## 7-Day Dashboard" in content
-    assert "## Extended Windows" in content
-    assert "## Multi-Window Summary" not in content
-    assert content.index("## 7-Day Dashboard") < content.index("## Extended Windows")
+    assert "## 30D Dashboard" in content
+    assert "## 90D Dashboard" in content
+    assert "## 180D Dashboard" in content
+    assert "## 1Y Dashboard" in content
+    assert "## Extended Windows" not in content
     assert "./img/btc-usd-7d.svg" in content
     assert "./img/eth-usd-7d.svg" in content
 
 
-def test_render_readme_places_seven_day_metrics_only_in_dashboard() -> None:
+def test_render_readme_places_matching_charts_inside_each_dashboard() -> None:
     prices = _sample_prices()
     windows = _sample_windows()
     charts = _sample_charts()
 
     content = render_readme(prices, windows, charts)
 
-    assert "## 7-Day Dashboard" in content
-    assert "### 7D" not in content
-    assert "### 30D" in content
-    assert "### 1Y" in content
+    assert "./img/btc-usd-7d.svg" in content
+    assert "./img/eth-usd-7d.svg" in content
+    assert "./img/btc-usd-30d.svg" in content
+    assert "./img/eth-usd-30d.svg" in content
+    assert "./img/btc-usd-90d.svg" in content
+    assert "./img/eth-usd-90d.svg" in content
+    assert "./img/btc-usd-180d.svg" in content
+    assert "./img/eth-usd-180d.svg" in content
+    assert "./img/btc-usd-1y.svg" in content
+    assert "./img/eth-usd-1y.svg" in content
 
 
-def test_render_readme_keeps_existing_sections_after_extended_windows() -> None:
+def test_render_readme_keeps_lower_chart_sections() -> None:
     prices = _sample_prices()
     windows = _sample_windows()
     charts = _sample_charts()
 
     content = render_readme(prices, windows, charts)
 
-    assert content.index("## Extended Windows") < content.index("## BTC Charts")
-    assert content.index("## BTC Charts") < content.index("## ETH Charts")
-    assert content.index("## ETH Charts") < content.index("## Deep Stats")
-    assert "./img/btc-usd-7d.svg" not in content.split("## BTC Charts", maxsplit=1)[1]
-    assert "./img/eth-usd-7d.svg" not in content.split("## ETH Charts", maxsplit=1)[1]
+    assert "## BTC Charts" in content
+    assert "## ETH Charts" in content
+    assert content.index("## 1Y Dashboard") < content.index("## BTC Charts")
 
 
 def test_render_readme_shows_positive_change() -> None:
@@ -204,7 +252,7 @@ def test_render_readme_contains_summary_stats() -> None:
     assert "$2.00" in content
     assert "+10.0%" in content
     assert "## 7-Day Dashboard" in content
-    assert "## Extended Windows" in content
+    assert "## 30D Dashboard" in content
     assert "./img/btc-usd-7d.svg" in content
     assert "./img/eth-usd-7d.svg" in content
 
@@ -332,16 +380,18 @@ def test_run_builds_named_windows_and_selected_charts(
 
     rendered = captured["rendered"]
     assert "## 7-Day Dashboard" in rendered
-    assert "### 30D" in rendered
-    assert "### 90D" in rendered
-    assert "### 180D" in rendered
-    assert "### 1Y" in rendered
+    assert "## 30D Dashboard" in rendered
+    assert "## 90D Dashboard" in rendered
+    assert "## 180D Dashboard" in rendered
+    assert "## 1Y Dashboard" in rendered
     assert "./img/btc-usd-7d.svg" in rendered
     assert "./img/eth-usd-7d.svg" in rendered
     assert "./img/btc-usd-30d.svg" in rendered
+    assert "./img/btc-usd-90d.svg" in rendered
     assert "./img/btc-usd-180d.svg" in rendered
     assert "./img/btc-usd-1y.svg" in rendered
     assert "./img/eth-usd-30d.svg" in rendered
+    assert "./img/eth-usd-90d.svg" in rendered
     assert "./img/eth-usd-180d.svg" in rendered
     assert "./img/eth-usd-1y.svg" in rendered
     assert chart_calls == [
@@ -355,6 +405,12 @@ def test_run_builds_named_windows_and_selected_charts(
             "coin": "BTC-USD",
             "path": "./img/btc-usd-30d.svg",
             "horizon_label": "30D",
+            "rows": "2",
+        },
+        {
+            "coin": "BTC-USD",
+            "path": "./img/btc-usd-90d.svg",
+            "horizon_label": "90D",
             "rows": "2",
         },
         {
@@ -383,6 +439,12 @@ def test_run_builds_named_windows_and_selected_charts(
         },
         {
             "coin": "ETH-USD",
+            "path": "./img/eth-usd-90d.svg",
+            "horizon_label": "90D",
+            "rows": "2",
+        },
+        {
+            "coin": "ETH-USD",
             "path": "./img/eth-usd-180d.svg",
             "horizon_label": "180D",
             "rows": "2",
@@ -397,20 +459,22 @@ def test_run_builds_named_windows_and_selected_charts(
     assert {call["horizon_label"] for call in chart_calls} == {
         "7D",
         "30D",
+        "90D",
         "180D",
         "1Y",
     }
     assert {call["path"] for call in chart_calls} == {
         "./img/btc-usd-7d.svg",
         "./img/btc-usd-30d.svg",
+        "./img/btc-usd-90d.svg",
         "./img/btc-usd-180d.svg",
         "./img/btc-usd-1y.svg",
         "./img/eth-usd-7d.svg",
         "./img/eth-usd-30d.svg",
+        "./img/eth-usd-90d.svg",
         "./img/eth-usd-180d.svg",
         "./img/eth-usd-1y.svg",
     }
-    assert all(call["horizon_label"] != "90D" for call in chart_calls)
     assert captured["window_labels"] == list(windows)
     assert set(captured["windows"]) == set(windows)
     assert set(captured["windows"]["7D"]) == {"BTC", "ETH"}
@@ -418,12 +482,14 @@ def test_run_builds_named_windows_and_selected_charts(
         "BTC": [
             {"label": "7D", "path": "./img/btc-usd-7d.svg"},
             {"label": "30D", "path": "./img/btc-usd-30d.svg"},
+            {"label": "90D", "path": "./img/btc-usd-90d.svg"},
             {"label": "180D", "path": "./img/btc-usd-180d.svg"},
             {"label": "1Y", "path": "./img/btc-usd-1y.svg"},
         ],
         "ETH": [
             {"label": "7D", "path": "./img/eth-usd-7d.svg"},
             {"label": "30D", "path": "./img/eth-usd-30d.svg"},
+            {"label": "90D", "path": "./img/eth-usd-90d.svg"},
             {"label": "180D", "path": "./img/eth-usd-180d.svg"},
             {"label": "1Y", "path": "./img/eth-usd-1y.svg"},
         ],
