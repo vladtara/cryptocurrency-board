@@ -187,7 +187,11 @@ def test_render_readme_contains_deep_stats() -> None:
 
 def test_render_readme_omits_deep_stats_without_1y() -> None:
     prices = _sample_prices()
-    windows = {label: metrics for label, metrics in _sample_windows().items() if label != "1Y"}
+    windows = {
+        label: metrics
+        for label, metrics in _sample_windows().items()
+        if label != "1Y"
+    }
     charts = _sample_charts()
 
     content = render_readme(prices, windows, charts)

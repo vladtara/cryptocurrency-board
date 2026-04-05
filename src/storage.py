@@ -56,7 +56,11 @@ def load_named_windows(
     """Load named history windows from newest rows in a CSV."""
     history = load_full_history(filepath)
     if not history.empty and "date" in history.columns:
-        history = history.sort_values("date", ascending=False, kind="stable").reset_index(drop=True)
+        history = history.sort_values(
+            "date",
+            ascending=False,
+            kind="stable",
+        ).reset_index(drop=True)
     return {label: history.head(days).copy() for label, days in windows.items()}
 
 
@@ -64,7 +68,11 @@ def compute_window_metrics(df: pd.DataFrame) -> dict[str, float | str]:
     """Compute dashboard metrics for a history window."""
     ordered = df
     if not ordered.empty and "date" in ordered.columns:
-        ordered = ordered.sort_values("date", ascending=False, kind="stable").reset_index(drop=True)
+        ordered = ordered.sort_values(
+            "date",
+            ascending=False,
+            kind="stable",
+        ).reset_index(drop=True)
 
     prices = ordered["price"].astype(float)
     if prices.empty:
@@ -119,7 +127,9 @@ def compute_window_metrics(df: pd.DataFrame) -> dict[str, float | str]:
         "median": float(prices.median()),
         "return_pct": 0.0 if oldest == 0 else (newest - oldest) / oldest * 100,
         "volatility": 0.0 if daily_returns.empty else float(daily_returns.std() * 100),
-        "range_pct": 0.0 if price_min == 0 else float((price_max - price_min) / price_min * 100),
+        "range_pct": 0.0
+        if price_min == 0
+        else float((price_max - price_min) / price_min * 100),
         "drawdown_pct": float(max_drawdown),
         "up_day_ratio": 0.0 if total_moves == 0 else float(up_days / total_moves * 100),
         "current_streak": f"{streak_direction}:{streak_length}",
