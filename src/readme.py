@@ -1,7 +1,6 @@
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from types import SimpleNamespace
-from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -28,7 +27,7 @@ def render_readme(
     environment = Environment(loader=FileSystemLoader(template_dir))
     template = environment.get_template("readme.md")
     coins = [prices["bitcoin"], prices["ethereum"]]
-    updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
+    updated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M")
     summary_stats = {
         symbol: SimpleNamespace(**values) for symbol, values in stats.items()
     }

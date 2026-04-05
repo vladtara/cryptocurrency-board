@@ -10,7 +10,11 @@ from src.storage import append_price, cleanup_zeros, load_full_history, load_his
 def test_append_price_creates_file(tmp_path: Path) -> None:
     filepath = tmp_path / "test.csv"
     price = CoinPrice(
-        coin="bitcoin", symbol="BTC", price=67500.0, change_24h=1.2, date=date(2026, 4, 5)
+        coin="bitcoin",
+        symbol="BTC",
+        price=67500.0,
+        change_24h=1.2,
+        date=date(2026, 4, 5),
     )
     append_price(price, filepath)
     assert filepath.exists()
@@ -23,10 +27,18 @@ def test_append_price_creates_file(tmp_path: Path) -> None:
 def test_append_price_prepends_to_existing(tmp_path: Path) -> None:
     filepath = tmp_path / "test.csv"
     old = CoinPrice(
-        coin="bitcoin", symbol="BTC", price=60000.0, change_24h=-0.5, date=date(2026, 4, 4)
+        coin="bitcoin",
+        symbol="BTC",
+        price=60000.0,
+        change_24h=-0.5,
+        date=date(2026, 4, 4),
     )
     new = CoinPrice(
-        coin="bitcoin", symbol="BTC", price=67500.0, change_24h=1.2, date=date(2026, 4, 5)
+        coin="bitcoin",
+        symbol="BTC",
+        price=67500.0,
+        change_24h=1.2,
+        date=date(2026, 4, 5),
     )
     append_price(old, filepath)
     append_price(new, filepath)

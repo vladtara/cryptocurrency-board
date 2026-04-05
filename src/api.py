@@ -87,4 +87,6 @@ async def fetch_prices(
                 )
                 await asyncio.sleep(wait)
 
-    raise FetchError(f"Failed to fetch prices after {max_retries} attempts: {last_error}")
+    raise FetchError(
+        f"Failed to fetch prices after {max_retries} attempts: {last_error}"
+    )

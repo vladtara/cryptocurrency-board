@@ -1,5 +1,8 @@
 from datetime import date
 
+import pytest
+from pydantic import ValidationError
+
 from src.models import CoinPrice, FetchError
 
 
@@ -19,9 +22,6 @@ def test_coin_price_valid() -> None:
 
 
 def test_coin_price_rejects_zero_price() -> None:
-    from pydantic import ValidationError
-    import pytest
-
     with pytest.raises(ValidationError):
         CoinPrice(
             coin="bitcoin",
@@ -33,9 +33,6 @@ def test_coin_price_rejects_zero_price() -> None:
 
 
 def test_coin_price_rejects_negative_price() -> None:
-    from pydantic import ValidationError
-    import pytest
-
     with pytest.raises(ValidationError):
         CoinPrice(
             coin="bitcoin",

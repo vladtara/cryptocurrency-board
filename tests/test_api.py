@@ -6,7 +6,6 @@ import src.api as api_module
 from src.api import fetch_prices
 from src.models import FetchError
 
-
 COINGECKO_URL = "https://api.coingecko.com/api/v3/simple/price"
 
 
@@ -69,7 +68,9 @@ async def test_fetch_prices_malformed_json_raises_fetch_error() -> None:
 
 @respx.mock
 @pytest.mark.asyncio
-async def test_fetch_prices_retries_then_succeeds(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_fetch_prices_retries_then_succeeds(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     sleep_calls: list[int] = []
 
     async def fake_sleep(delay: int) -> None:

@@ -6,6 +6,7 @@ import pandas as pd
 from src.models import CoinPrice
 
 logger = logging.getLogger(__name__)
+CSV_COLUMNS = pd.Index(["date", "price", "change_24h"])
 
 
 def append_price(coin_price: CoinPrice, filepath: Path) -> None:
@@ -31,7 +32,7 @@ def append_price(coin_price: CoinPrice, filepath: Path) -> None:
 def load_history(filepath: Path, days: int = 7) -> pd.DataFrame:
     """Load the last N days from a CSV file."""
     if not filepath.exists():
-        return pd.DataFrame(columns=["date", "price", "change_24h"])
+        return pd.DataFrame(columns=CSV_COLUMNS)
     df = pd.read_csv(filepath)
     if "change_24h" not in df.columns:
         df["change_24h"] = float("nan")
@@ -41,7 +42,7 @@ def load_history(filepath: Path, days: int = 7) -> pd.DataFrame:
 def load_full_history(filepath: Path) -> pd.DataFrame:
     """Load all rows from a CSV file."""
     if not filepath.exists():
-        return pd.DataFrame(columns=["date", "price", "change_24h"])
+        return pd.DataFrame(columns=CSV_COLUMNS)
     df = pd.read_csv(filepath)
     if "change_24h" not in df.columns:
         df["change_24h"] = float("nan")
