@@ -1,4 +1,4 @@
-FROM python:3.14-alpine
+FROM python:3.13-slim
 
 ENV GITHUB_REPO_URL=""
 ENV GITHUB_USERNAME=""
@@ -7,9 +7,11 @@ ENV COINGECKO_API_KEY=""
 
 WORKDIR /app
 
-RUN apk add --no-cache git
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+RUN pip install --no-cache-dir uv
 
 COPY pyproject.toml uv.lock ./
 
