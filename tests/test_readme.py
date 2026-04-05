@@ -180,8 +180,20 @@ def test_render_readme_contains_deep_stats() -> None:
     content = render_readme(prices, windows, charts)
 
     assert "## Deep Stats" in content
-    assert "Range %" in content
-    assert "Drawdown %" in content
+    assert "### 1Y" in content
+    assert "| **BTC** | 12.3% | 4.5% |" in content
+    assert "| **ETH** | 9.8% | 3.2% |" in content
+
+
+def test_render_readme_omits_deep_stats_without_1y() -> None:
+    prices = _sample_prices()
+    windows = {label: metrics for label, metrics in _sample_windows().items() if label != "1Y"}
+    charts = _sample_charts()
+
+    content = render_readme(prices, windows, charts)
+
+    assert "## Deep Stats" not in content
+    assert "### 1Y" not in content
 
 
 def test_render_readme_contains_timestamp() -> None:

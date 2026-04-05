@@ -33,6 +33,7 @@
 
 {% endfor %}
 
+{% if "1Y" in window_rows %}
 ## Deep Stats
 
 ### 1Y
@@ -41,3 +42,4 @@
 |------|---------|------------|
 | **BTC** | {{ "{:.1f}".format(window_rows["1Y"].BTC.range_pct) }}% | {{ "{:.1f}".format(window_rows["1Y"].BTC.drawdown_pct) }}% |
 | **ETH** | {{ "{:.1f}".format(window_rows["1Y"].ETH.range_pct) }}% | {{ "{:.1f}".format(window_rows["1Y"].ETH.drawdown_pct) }}% |
+{% endif %}
