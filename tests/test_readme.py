@@ -172,6 +172,7 @@ def test_run_builds_named_windows_and_selected_charts(
         "1Y": 365,
     }
     captured: dict[str, object] = {}
+    real_template_dir = Path(__file__).resolve().parents[1] / "templates"
     history = pd.DataFrame(
         {
             "date": ["2026-04-05", "2026-04-04"],
@@ -210,13 +211,20 @@ def test_run_builds_named_windows_and_selected_charts(
         prices: dict[str, CoinPrice],
         window_stats: dict[str, dict[str, dict[str, float | str]]],
         chart_paths: dict[str, list[dict[str, str]]],
-        template_dir: str = "./templates",
+        _template_dir: str = "./templates",
     ) -> str:
-        del template_dir
+        del _template_dir
         captured["prices"] = prices
         captured["windows"] = window_stats
         captured["charts"] = chart_paths
-        return "# README"
+        rendered = render_readme(
+            prices,
+            window_stats,
+            chart_paths,
+            str(real_template_dir),
+        )
+        captured["rendered"] = rendered
+        return rendered
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("COINGECKO_API_KEY", "test-key")
@@ -229,6 +237,18 @@ def test_run_builds_named_windows_and_selected_charts(
 
     asyncio.run(pipeline.run())
 
+    rendered = captured["rendered"]
+    assert "### 7D" in rendered
+    assert "### 30D" in rendered
+    assert "### 90D" in rendered
+    assert "### 180D" in rendered
+    assert "### 1Y" in rendered
+    assert "./img/btc-usd-30d.svg" in rendered
+    assert "./img/btc-usd-180d.svg" in rendered
+    assert "./img/btc-usd-1y.svg" in rendered
+    assert "./img/eth-usd-30d.svg" in rendered
+    assert "./img/eth-usd-180d.svg" in rendered
+    assert "./img/eth-usd-1y.svg" in rendered
     assert captured["window_labels"] == list(windows)
     assert set(captured["windows"]) == set(windows)
     assert set(captured["windows"]["7D"]) == {"BTC", "ETH"}
